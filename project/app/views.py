@@ -11,6 +11,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status 
 from rest_framework.views import APIView
 from django.http import Http404
+from rest_framework import mixins
+from rest_framework import generics
 
 
 
@@ -204,46 +206,87 @@ from django.http import Http404
 #     return Response({'msg': 'id not present in Database'})
 
 #------------------------------------------------------CLASS BASED API-----------------------------------
-class Stulist(APIView):
-    def get(self,request):
-        user=StudentModel.objects.all()
-        serializers=StudentSerializer(user,many=True)
-        return Response(serializers.data)
+# class Stulist(APIView):
+#     def get(self,request):
+#         user=StudentModel.objects.all()
+#         serializers=StudentSerializer(user,many=True)
+#         return Response(serializers.data)
     
-    def post(self,request):
-        serializers=StudentSerializer(data=request.data)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data,status=status.HTTP_201_CREATED)
+#     def post(self,request):
+#         serializers=StudentSerializer(data=request.data)
+#         if serializers.is_valid():
+#             serializers.save()
+#             return Response(serializers.data,status=status.HTTP_201_CREATED)
         
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+#         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class Studetail(APIView):
-    def get_object(self,pk):
-        try:
-            return StudentModel.objects.get(id=pk)
-        except StudentModel.DoesNotExist:
-            raise Http404       
+# class Studetail(APIView):
+#     def get_object(self,pk):
+#         try:
+#             return StudentModel.objects.get(id=pk)
+#         except StudentModel.DoesNotExist:
+#             raise Http404       
         
-    def get(self,request,pk):
-        user=self.get_object(pk)
-        serializers=StudentSerializer(user,data=request.data)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data)
-        return Response(serializers.errors ,status=status.HTTP_400_BAD_REQUEST)
+#     def get(self,request,pk):
+#         user=self.get_object(pk)
+#         serializers=StudentSerializer(user,data=request.data)
+#         if serializers.is_valid():
+#             serializers.save()
+#             return Response(serializers.data)
+#         return Response(serializers.errors ,status=status.HTTP_400_BAD_REQUEST)
     
-    def put(self,request,pk):
-        user=self.get_object(pk)
-        serializers=StudentSerializer(user,partial=True)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data)
-        return  Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
-    def delete(self,request,pk):
-        user=self.get_object(pk)
-        user.delete()
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+#     def put(self,request,pk):
+#         user=self.get_object(pk)
+#         serializers=StudentSerializer(user,partial=True)
+#         if serializers.is_valid():
+#             serializers.save()
+#             return Response(serializers.data)
+#         return  Response(serializers.errors,status=status.HTTP_400_BAD_REQUEST)
+#     def delete(self,request,pk):
+#         user=self.get_object(pk)
+#         user.delete()
+#         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+#-----------------------------------------------MIXINS BASED API------------------------------------------
+#    This is a type of class based api 
+
+# class Stulist(mixins.ListModelMixin,
+#                   mixins.CreateModelMixin,
+#                   generics.GenericAPIView):
+#     queryset = StudentModel.objects.all()
+#     serializer_class = StudentSerializer
+
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+
+# class Studetail(mixins.RetrieveModelMixin,
+#                     mixins.UpdateModelMixin,
+#                     mixins.DestroyModelMixin,
+#                     generics.GenericAPIView):
+#     queryset = StudentModel.objects.all()
+#     serializer_class = StudentSerializer
+
+#     def get(self, request, *args, **kwargs):
+#         return self.retrieve(request, *args, **kwargs)
+
+#     def put(self, request, *args, **kwargs):
+#         return self.update(request, *args, **kwargs)
+
+#     def delete(self, request, *args, **kwargs):
+#         return self.destroy(request, *args, **kwargs)
+
+# -----------------------GENERIC BASED API--------------
+class Stulist(generics.ListCreateAPIView):
+    queryset = StudentModel.objects.all()
+    serializer_class = StudentSerializer
+
+
+class Studetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = StudentModel.objects.all()
+    serializer_class = StudentSerializer
 
 
 

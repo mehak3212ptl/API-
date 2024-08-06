@@ -9,8 +9,13 @@ from .views import *
 
 
 # -------------------------class based 
-urlpatterns=[
+# urlpatterns=[
+#     path('stulist/', Stulist.as_view()),
+#     path('studetail/<int:pk>/',Studetail.as_view())   
+# ]
+
+# ------------------------------MIXINS BASWD URL--------------------------------
+urlpatterns =[
     path('stulist/', Stulist.as_view()),
-    path('studetail/<int:pk>/',Studetail.as_view())
-    
+    path('studetail/<int:pk>/',Studetail.as_view()) 
 ]
