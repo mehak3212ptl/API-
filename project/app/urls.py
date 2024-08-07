@@ -15,7 +15,16 @@ from .views import *
 # ]
 
 # ------------------------------MIXINS BASWD URL--------------------------------
-urlpatterns =[
-    path('stulist/', Stulist.as_view()),
-    path('studetail/<int:pk>/',Studetail.as_view()) 
-]
+# urlpatterns =[
+#     path('stulist/', Stulist.as_view()),
+#     path('studetail/<int:pk>/',Studetail.as_view()) 
+#]
+
+
+#------------------------------ Routerss url -------------------------------
+from .views import *
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'users', Studentviewset, basename='user')
+urlpatterns = router.urls

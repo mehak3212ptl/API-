@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from django.http import Http404
 from rest_framework import mixins
 from rest_framework import generics
+from rest_framework import viewsets
 
 
 
@@ -278,15 +279,66 @@ from rest_framework import generics
 #     def delete(self, request, *args, **kwargs):
 #         return self.destroy(request, *args, **kwargs)
 
-# -----------------------GENERIC BASED API--------------
-class Stulist(generics.ListCreateAPIView):
-    queryset = StudentModel.objects.all()
-    serializer_class = StudentSerializer
+# ----------------------------------------------GENERIC BASED API--------------
+# class Stulist(generics.ListCreateAPIView):
+#     queryset = StudentModel.objects.all()
+#     serializer_class = StudentSerializer
 
 
-class Studetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = StudentModel.objects.all()
-    serializer_class = StudentSerializer
+# class Studetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = StudentModel.objects.all()
+#     serializer_class = StudentSerializer
+
+# --------------------------------------------------ROUTERS------------------------------------
+# -----------------all methods in one url 
+
+class Studentviewset(viewsets.ViewSet):
+
+    def list(self,request):
+        stu=StudentModel.objects.all()
+        serializer=StudentSerializer(stu,many=True)
+        print(serializer)
+        
+        return Response(serializer.data)
+    
+    def retrieve(self,request,pk=None):
+        id = pk
+        if id is not None:
+            stu = StudentModel.objects.get(id=id)
+            serializer = StudentSerializer(stu)
+            return Response(serializer.data)
+        
+    def create(self,request):
+        serializer=StudentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg':'Data Created'}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors)
+    
+    def update(self,request,pk):
+        id =pk
+        stu=StudentModel.objects.get(id=pk)
+        serializer=StudentSerializer(stu, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg':'Complete Data Updated'})
+        return Response(serializer.errors)
+    
+    def partial_update(self,request,pk) :
+        id=pk
+        stu=StudentModel.objects.get(id=pk)
+        serializer=StudentSerializer(stu,data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'msg':'Partial Data Updated'})
+        return Response(serializer.errors)
+
+    def destroy(self,request,pk):
+        id=pk
+        stu=StudentModel.objects.get(id=pk)
+        stu.delete()
+        return Response({'msg':'Data Deleted'})
+
 
 
 
